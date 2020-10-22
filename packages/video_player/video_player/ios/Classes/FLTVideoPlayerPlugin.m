@@ -317,6 +317,15 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
       return;
     }
 
+    // Fix for width and height based off of preferredTransform rotation
+    bool isRotated = false;
+    AVPlayerItemTrack *track = [self.player currentItem].tracks.firstObject;
+    if(track != nil){
+      CGAffineTransform prefTrans = track.assetTrack.preferredTransform;
+      NSInteger rotationDegrees = (NSInteger)round(radiansToDegrees(atan2(prefTrans.b, prefTrans.a)));
+      isRotated = rotationDegrees == 90 || rotationDegrees == 270;
+    }
+
     _isInitialized = true;
     _eventSink(@{
       @"event" : @"initialized",
